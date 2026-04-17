@@ -1,0 +1,8 @@
+{
+  "name": "base64-pro",
+  "version": "1.0.0",
+  "description": "Advanced Base64 encoder/decoder with file support",
+  "scripts": {
+    "deploy": "vercel --yes --prod"
+  }
+}

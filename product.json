@@ -1,0 +1,10 @@
+{
+  "name": "Base64 Pro",
+  "slug": "base64-pro",
+  "description": "Advanced Base64 encoder/decoder with file support, URL-safe option, and bulk operations",
+  "price": "$19",
+  "status": "building",
+  "checkout_url": "",
+  "vercel_url": "",
+  "health_status": "building"
+}

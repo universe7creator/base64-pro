@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Pro — Advanced Encoder/Decoder</title>
+  <meta name="description" content="Professional Base64 encoder/decoder with file support, URL-safe option, bulk operations, and real-time conversion.">
+  <meta property="og:title" content="Base64 Pro — Advanced Encoder/Decoder">
+  <meta property="og:description" content="Encode/decode Base64 with file support, drag & drop, and bulk operations.">
+  <meta property="og:type" content="website">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dark: { 900: '#0a0a0a', 800: '#141414', 700: '#1a1a1a', 600: '#262626' },
+            brand: { 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed' },
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'fade-in': 'fadeIn 0.5s ease-out',
+          },
+          keyframes: {
+            glow: {
+              '0%': { boxShadow: '0 0 5px rgba(139, 92, 246, 0.5)' },
+              '100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(139, 92, 246, 0.4)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #0a0a0a; }
+    .glass { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(12px); }
+    .gradient-text { background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .input-area { background: #0f0f0f; border: 1px solid #262626; }
+    .input-area:focus { border-color: #8b5cf6; outline: none; }
+    .btn-primary { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
+    .drop-zone { border: 2px dashed #333; transition: all 0.3s; }
+    .drop-zone.dragover { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+    .tab-active { background: #8b5cf6; color: white; }
+    .tab-inactive { background: transparent; color: #666; }
+    .tab-inactive:hover { color: #aaa; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
+  </style>
+</head>
+<body class="text-gray-300 font-sans min-h-screen">
+  <!-- Header -->
+  <header class="fixed top-0 w-full z-50 glass border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold text-sm">B64</span>
+          </div>
+          <span class="text-white font-semibold">Base64 Pro</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#converter" class="text-sm text-gray-400 hover:text-white transition">Converter</a>
+          <a href="#features" class="text-sm text-gray-400 hover:text-white transition">Features</a>
+          <a href="#faq" class="text-sm text-gray-gray-400 hover:text-white transition">FAQ</a>
+        </nav>
+        <a href="#pricing" class="btn-primary px-4 py-2 rounded-lg text-white text-sm font-medium transition">
+          Get Pro — $19
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto text-center animate-fade-in">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-medium mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"></span>
+        Encoding/Decoding Category — First in Portfolio
+      </div>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+        Advanced <span class="gradient-text">Base64</span><br>Encoder & Decoder
+      </h1>
+      <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+        Professional Base64 tools with file support, URL-safe encoding, bulk operations, and real-time conversion. No data leaves your browser.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#converter" class="btn-primary px-8 py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Try Free Converter
+        </a>
+        <a href="#features" class="px-8 py-3 rounded-xl bg-dark-700 border border-gray-700 text-white font-semibold hover:bg-dark-600 transition">
+          Explore Features
+        </a>
+      </div>
+      <div class="mt-12 flex items-center justify-center gap-6 text-sm text-gray-500">
+        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Client-side only</span>
+        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Instant conversion</span>
+        <span class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>File support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Converter Tool -->
+  <section id="converter" class="py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="glass rounded-2xl border border-gray-800 overflow-hidden">
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-800">
+          <button onclick="switchTab('text')" id="tab-text" class="tab-active flex-1 py-4 px-6 text-sm font-medium transition">Text Converter</button>
+          <button onclick="switchTab('file')" id="tab-file" class="tab-inactive flex-1 py-4 px-6 text-sm font-medium transition">File Converter</button>
+          <button onclick="switchTab('bulk')" id="tab-bulk" class="tab-inactive flex-1 py-4 px-6 text-sm font-medium transition">Bulk Pro</button>
+        </div>
+
+        <!-- Text Tab -->
+        <div id="panel-text" class="p-6">
+          <div class="flex gap-4 mb-4">
+            <button onclick="setMode('encode')" id="mode-encode" class="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium">Encode</button>
+            <button onclick="setMode('decode')" id="mode-decode" class="px-4 py-2 rounded-lg bg-dark-700 text-gray-400 text-sm font-medium hover:text-white">Decode</button>
+          </div>
+          <div class="grid lg:grid-cols-2 gap-4">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-sm text-gray-400">Input</label>
+                <span id="input-stats" class="text-xs text-gray-500">0 chars</span>
+              </div>
+              <textarea id="input-text" oninput="convert()" class="input-area w-full h-64 p-4 rounded-xl text-sm font-mono text-gray-300 resize-none" placeholder="Type or paste your text here..."></textarea>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-sm text-gray-400">Output</label>
+                <div class="flex gap-2">
+                  <span id="output-stats" class="text-xs text-gray-500">0 chars</span>
+                  <button onclick="copyOutput()" class="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <textarea id="output-text" readonly class="input-area w-full h-64 p-4 rounded-xl text-sm font-mono text-gray-300 resize-none bg-dark-800" placeholder="Result will appear here..."></textarea>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-800">
+            <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <input type="checkbox" id="url-safe" onchange="convert()" class="rounded border-gray-600 bg-dark-700 text-brand-500">
+              URL-safe encoding (- _ instead of + /)
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <input type="checkbox" id="no-padding" onchange="convert()" class="rounded border-gray-600 bg-dark-700 text-brand-500">
+              No padding (=)
+            </label>
+          </div>
+        </div>
+
+        <!-- File Tab -->
+        <div id="panel-file" class="p-6 hidden">
+          <div class="drop-zone rounded-2xl p-12 text-center" id="drop-zone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            <div class="w-16 h-16 rounded-2xl bg-dark-700 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            </div>
+            <p class="text-white font-medium mb-2">Drop files here or click to browse</p>
+            <p class="text-sm text-gray-500 mb-4">Images, PDFs, text files — any format supported</p>
+            <input type="file" id="file-input" onchange="handleFile(this.files[0])" class="hidden">
+            <button onclick="document.getElementById('file-input').click()" class="px-4 py-2 rounded-lg bg-dark-700 border border-gray-700 text-white text-sm hover:bg-dark-600 transition">Select File</button>
+          </div>
+          <div id="file-result" class="hidden mt-6">
+            <div class="flex justify-between items-center mb-3">
+              <span id="file-name" class="text-white font-medium"></span>
+              <span id="file-size" class="text-sm text-gray-500"></span>
+            </div>
+            <div class="bg-dark-800 rounded-xl p-4 mb-4">
+              <textarea id="file-output" readonly class="w-full h-32 bg-transparent text-xs font-mono text-gray-400 resize-none border-0 focus:outline-none" placeholder="Base64 output..."></textarea>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="downloadBase64()" class="flex-1 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-500 transition">Download as .b64</button>
+              <button onclick="copyFileOutput()" class="flex-1 py-3 rounded-xl bg-dark-700 border border-gray-700 text-white font-medium hover:bg-dark-600 transition">Copy to Clipboard</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bulk Tab (Pro Feature) -->
+        <div id="panel-bulk" class="p-6 hidden">
+          <div class="text-center py-12">
+            <div class="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">Bulk Operations</h3>
+            <p class="text-gray-400 mb-6 max-w-md mx-auto">Process multiple files at once, batch encode/decode from lists, and automate your workflow.</p>
+            <a href="#pricing" class="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold">
+              Unlock with Pro — $19
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-4">Everything You Need</h2>
+        <p class="text-gray-400">Professional-grade Base64 tools designed for developers</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Real-time Conversion</h3>
+          <p class="text-gray-400 text-sm">Type-as-you-convert functionality. See results instantly as you type or paste.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">File Support</h3>
+          <p class="text-gray-400 text-sm">Encode any file to Base64. Decode Base64 to any file format. Drag & drop support.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">URL-Safe Encoding</h3>
+          <p class="text-gray-400 text-sm">Special Base64 variant for URLs and filenames. RFC 4648 compliant.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Bulk Operations</h3>
+          <p class="text-gray-400 text-sm">Process multiple files at once. Batch encode/decode entire lists. Pro feature.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Client-Side Only</h3>
+          <p class="text-gray-400 text-sm">All processing happens in your browser. Your data never leaves your device.</p>
+        </div>
+        <div class="glass rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition">
+          <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Advanced Options</h3>
+          <p class="text-gray-400 text-sm">Line wrapping, padding control, charset selection. Fine-tune your output.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-4">Simple Pricing</h2>
+        <p class="text-gray-400">One-time payment. Lifetime access. No subscriptions.</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="glass rounded-2xl p-8 border border-gray-800">
+          <h3 class="text-lg font-medium text-gray-400 mb-2">Free</h3>
+          <div class="text-4xl font-bold text-white mb-6">$0</div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Text encode/decode</li>
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Single file encoding</li>
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>URL-safe option</li>
+            <li class="flex items-center gap-3 text-gray-500"><svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>Bulk operations</li>
+          </ul>
+          <button class="w-full py-3 rounded-xl bg-dark-700 text-white font-medium">Current Plan</button>
+        </div>
+        <div class="glass rounded-2xl p-8 border-2 border-brand-500 relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-500 rounded-full text-white text-xs font-medium">Most Popular</div>
+          <h3 class="text-lg font-medium text-brand-400 mb-2">Pro</h3>
+          <div class="text-4xl font-bold text-white mb-6">$19</div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Everything in Free</li>
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Bulk file processing</li>
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Batch encode/decode</li>
+            <li class="flex items-center gap-3 text-gray-300"><svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Lifetime updates</li>
+          </ul>
+          <a href="https://profitbridge.lemonsqueezy.com/checkout/buy/base64-pro" class="block w-full py-3 rounded-xl btn-primary text-white font-semibold text-center">Get Pro Access</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <div class="glass rounded-xl border border-gray-800 overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full px-6 py-4 flex justify-between items-center text-left">
+            <span class="text-white font-medium">Is my data secure?</span>
+            <svg class="w-5 h-5 text-gray-500 transform transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="hidden px-6 pb-4 text-gray-400">Yes. All processing happens client-side in your browser. Your data is never sent to any server. You can verify this by checking the network tab — no data leaves your device.</div>
+        </div>
+        <div class="glass rounded-xl border border-gray-800 overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full px-6 py-4 flex justify-between items-center text-left">
+            <span class="text-white font-medium">What file types are supported?</span>
+            <svg class="w-5 h-5 text-gray-500 transform transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="hidden px-6 pb-4 text-gray-400">Any file type can be encoded to Base64: images (PNG, JPG, GIF), PDFs, text files, binary files, and more. When decoding, the tool attempts to detect the file type automatically.</div>
+        </div>
+        <div class="glass rounded-xl border border-gray-800 overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full px-6 py-4 flex justify-between items-center text-left">
+            <span class="text-white font-medium">What is URL-safe Base64?</span>
+            <svg class="w-5 h-5 text-gray-500 transform transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="hidden px-6 pb-4 text-gray-400">URL-safe Base64 replaces the + and / characters with - and _ respectively. This makes the encoded string safe to use in URLs and filenames without additional encoding.</div>
+        </div>
+        <div class="glass rounded-xl border border-gray-800 overflow-hidden">
+          <button onclick="toggleFaq(this)" class="w-full px-6 py-4 flex justify-between items-center text-left">
+            <span class="text-white font-medium">Can I get a refund?</span>
+            <svg class="w-5 h-5 text-gray-500 transform transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="hidden px-6 pb-4 text-gray-400">Yes. We offer a 14-day money-back guarantee. If you're not satisfied with Base64 Pro for any reason, contact us for a full refund.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold text-sm">B64</span>
+          </div>
+          <span class="text-white font-semibold">Base64 Pro</span>
+        </div>
+        <div class="flex gap-6 text-sm text-gray-400">
+          <a href="/privacy" class="hover:text-white transition">Privacy</a>
+          <a href="/terms" class="hover:text-white transition">Terms</a>
+          <a href="mailto:support@base64pro.dev" class="hover:text-white transition">Support</a>
+        </div>
+        <p class="text-sm text-gray-500">© 2024 Base64 Pro. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-dark-700 border border-gray-700 text-white px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <span id="toast-message">Copied!</span>
+  </div>
+
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      ['text', 'file', 'bulk'].forEach(t => {
+        document.getElementById(`tab-${t}`).className = t === tab ? 'tab-active flex-1 py-4 px-6 text-sm font-medium transition' : 'tab-inactive flex-1 py-4 px-6 text-sm font-medium transition';
+        document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    // Mode switching
+    let currentMode = 'encode';
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('mode-encode').className = mode === 'encode' ? 'px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium' : 'px-4 py-2 rounded-lg bg-dark-700 text-gray-400 text-sm font-medium hover:text-white';
+      document.getElementById('mode-decode').className = mode === 'decode' ? 'px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium' : 'px-4 py-2 rounded-lg bg-dark-700 text-gray-400 text-sm font-medium hover:text-white';
+      convert();
+    }
+
+    // Conversion
+    function convert() {
+      const input = document.getElementById('input-text').value;
+      const urlSafe = document.getElementById('url-safe').checked;
+      const noPadding = document.getElementById('no-padding').checked;
+
+      document.getElementById('input-stats').textContent = `${input.length} chars`;
+
+      if (!input) {
+        document.getElementById('output-text').value = '';
+        document.getElementById('output-stats').textContent = '0 chars';
+        return;
+      }
+
+      let output = '';
+      try {
+        if (currentMode === 'encode') {
+          output = btoa(unescape(encodeURIComponent(input)));
+          if (urlSafe) {
+            output = output.replace(/\+/g, '-').replace(/\//g, '_');
+          }
+          if (noPadding) {
+            output = output.replace(/=+$/, '');
+          }
+        } else {
+          let decoded = input;
+          if (urlSafe) {
+            decoded = decoded.replace(/-/g, '+').replace(/_/g, '/');
+          }
+          // Add padding if needed
+          while (decoded.length % 4) decoded += '=';
+          output = decodeURIComponent(escape(atob(decoded)));
+        }
+      } catch (e) {
+        output = 'Error: Invalid input';
+      }
+
+      document.getElementById('output-text').value = output;
+      document.getElementById('output-stats').textContent = `${output.length} chars`;
+    }
+
+    // Copy functions
+    function copyOutput() {
+      const output = document.getElementById('output-text');
+      output.select();
+      document.execCommand('copy');
+      showToast('Copied to clipboard!');
+    }
+
+    function copyFileOutput() {
+      const output = document.getElementById('file-output');
+      output.select();
+      document.execCommand('copy');
+      showToast('Copied to clipboard!');
+    }
+
+    // File handling
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    }
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result.split(',')[1];
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('file-size').textContent = formatBytes(file.size);
+        document.getElementById('file-output').value = base64;
+        document.getElementById('file-result').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function downloadBase64() {
+      const content = document.getElementById('file-output').value;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'encoded.b64';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Downloaded!');
+    }
+
+    // FAQ toggle
+    function toggleFaq(btn) {
+      const content = btn.nextElementSibling;
+      const arrow = btn.querySelector('svg');
+      content.classList.toggle('hidden');
+      arrow.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+
+    // Toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
