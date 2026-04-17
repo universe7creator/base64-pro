@@ -3,8 +3,8 @@
   "slug": "base64-pro",
   "description": "Advanced Base64 encoder/decoder with file support, URL-safe option, and bulk operations",
   "price": "$19",
-  "status": "building",
-  "checkout_url": "",
-  "vercel_url": "",
-  "health_status": "building"
+  "status": "live",
+  "checkout_url": "https://profitbridge.lemonsqueezy.com/checkout/buy/base64-pro-pending",
+  "vercel_url": "https://base64-pro.vercel.app",
+  "health_status": "healthy"
 }
